@@ -1,4 +1,4 @@
-import { auth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'myFb';
+import { GithubAuthProvider, GoogleAuthProvider, auth, createUserWithEmailAndPassword, getRedirectResult, signInWithEmailAndPassword, signInWithPopup, signInWithRedirect } from 'myFb';
 import React, { useState } from "react";
 
 
@@ -15,7 +15,7 @@ const Auth = () => {
                 const data = await createUserWithEmailAndPassword(auth, form.email, form.password)
                 .then((userCredential) => {
                     const user = userCredential.user;
-                    console.log(user);
+                    // console.log(user);
                 })
             } else {
                 await signInWithEmailAndPassword(auth, form.email, form.password)
@@ -31,6 +31,38 @@ const Auth = () => {
 
     const toggleAccount = () => setIsNewAccount(prev => !prev);
 
+    const onSocialClick = async (event) => {
+        const {target: { name }} = event;
+        // Sign in using a popup.
+        let provider;
+        if(name ==='google') {
+            // Sign in using a popup.
+            provider = new GoogleAuthProvider();
+            provider.addScope('profile');
+            provider.addScope('email');
+            const result = await signInWithPopup(auth, provider);
+
+            // The signed-in user info.
+            const user = result.user;
+            // This gives you a Google Access Token.
+            const credential = GoogleAuthProvider.credentialFromResult(result);
+            const token = credential.accessToken;
+
+        } else if(name === 'github') {
+            // Sign in using a popup.
+            provider = new GithubAuthProvider();
+            provider.addScope('repo');
+            const result = await signInWithPopup(auth, provider);
+
+            // The signed-in user info.
+            const user = result.user;
+            // This gives you a Github Access Token.
+            const credential = GithubAuthProvider.credentialFromResult(result);
+            const token = credential.accessToken;
+
+        }
+    }
+
     return (
     <div>
         <form onSubmit={onSubmit}>
@@ -41,10 +73,8 @@ const Auth = () => {
         </form>
         <span onClick={toggleAccount}>{!isNewAccount ? 'Create New Account':'Sign in'}</span>
         
-        <div>
-            <button>Continue with Google</button>
-            <button>Continue with Github</button>
-        </div>
+        <button name='google' onClick={onSocialClick}>Continue with Google</button>
+        <button name='github' onClick={onSocialClick}>Continue with Github</button>
     </div>
 
     )
