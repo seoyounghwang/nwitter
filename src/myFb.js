@@ -1,7 +1,7 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
-import { collection, addDoc, getDocs } from "firebase/firestore"; 
+import { collection, addDoc, getDocs, onSnapshot, doc } from "firebase/firestore"; 
 import {getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, GoogleAuthProvider, GithubAuthProvider,signInWithRedirect, getRedirectResult, signInWithPopup, } from "firebase/auth";
 
 // TODO: Add SDKs for Firebase products that you want to use
@@ -25,6 +25,6 @@ const db = getFirestore(app);
 
 // Initialize Firebase Authentication and get a reference to the service
 export const auth = getAuth(app);
-export {createUserWithEmailAndPassword, signInWithEmailAndPassword, GoogleAuthProvider, signInWithRedirect, getRedirectResult, signInWithPopup, GithubAuthProvider, db, collection, addDoc, getDocs};
+export {createUserWithEmailAndPassword, signInWithEmailAndPassword, GoogleAuthProvider, signInWithRedirect, getRedirectResult, signInWithPopup, GithubAuthProvider, db, collection, addDoc, getDocs, doc, onSnapshot};
 
 export default app;

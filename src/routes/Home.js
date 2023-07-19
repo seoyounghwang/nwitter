@@ -1,41 +1,43 @@
 
-import { addDoc, collection, db, getDocs } from 'myFb';
+import { orderBy } from 'firebase/firestore';
+import { addDoc, collection, db, onSnapshot } from 'myFb';
 import React, { useEffect, useState } from "react";
+import { Audio } from 'react-loader-spinner';
 
-const Home = () => {
+const Home = ({userObj}) => {
     const [tweet, setTweet] = useState('');
     const [tweets, setTweets] = useState([]);
-
     
     useEffect(()=> {
-        const getTweets = async () => {
-            try {
-                const querySnapshot = await getDocs(collection(db, "nweets"));
-                querySnapshot.forEach((doc) => {
-                    const tweetObject = {
-                        ...doc.data(),
-                        id: doc.id,
-                    };
-                    setTweets((prev)=> [tweetObject, ...prev]);
-                })
-                
-            } catch (error) {
-                console.log(error);
-            }
-        }
-        getTweets();
+
+        onSnapshot(collection(db, "nweets"),orderBy("createdAt", "desc"), (snapshot)=> {
+            const nweetsArray = snapshot.docs.map((doc)=> ({
+                id: doc.id,
+                ...doc.data(),
+            }));
+            setTweets(nweetsArray);
+        });
     }, []);
 
     if (!tweets) {
-        return null; // 또는 로딩 스피너 등을 반환할 수 있습니다.
+        return <Audio
+        height="80"
+        width="80"
+        radius="9"
+        color="green"
+        ariaLabel="loading"
+        wrapperStyle
+        wrapperClass
+      />; // 또는 로딩 스피너 등을 반환할 수 있습니다.
       }
 
     const onSubmit = async (e) => {
         e.preventDefault();
         try {
         const docRef = await addDoc(collection(db, "nweets"), {
-            nweets: tweet,
-            createdAt: Date.now()
+            text: tweet,
+            createdAt: Date.now(),
+            creatorId: userObj.uid 
         });
         
         } catch (e) {
@@ -53,8 +55,8 @@ const Home = () => {
             <button type='submit'>Tweet</button>
         </form>
         {tweets.map((tweet)=> {
-            return (<div>
-                {tweet.nweets}
+            return (<div key={tweet.id}>
+                {tweet.text}
             </div>)
         })}
         </>
