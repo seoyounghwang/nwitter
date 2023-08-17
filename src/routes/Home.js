@@ -1,4 +1,5 @@
 
+import Nweet from 'components/Nweet';
 import { orderBy } from 'firebase/firestore';
 import { addDoc, collection, db, onSnapshot } from 'myFb';
 import React, { useEffect, useState } from "react";
@@ -55,9 +56,7 @@ const Home = ({userObj}) => {
             <button type='submit'>Tweet</button>
         </form>
         {tweets.map((tweet)=> {
-            return (<div key={tweet.id}>
-                {tweet.text}
-            </div>)
+            return (<Nweet key={tweet.id} nweetObj={tweet} isOwner={userObj.uid === tweet.creatorId}/>)
         })}
         </>
     )
